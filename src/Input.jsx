@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Input = () => {
-  const InputRef = React.useRef(null);
+  const inputRef = React.useRef(null);
   const [value, setValue] = useState("");
   const handleClickChange = (e) => {
     setValue(e.target.value);
@@ -9,23 +9,35 @@ const Input = () => {
   const [deal, setDeal] = useState([]);
   const addDealInArr = () => {
     if (value !== "") {
-      setDeal([...value, {id:Date.now(), text:deal}]);
+      setDeal([...deal, { id: Date.now(), text: value }]);
+
       setValue("");
     }
   };
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []) 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      addDealInArr(); // Добавляем дело при нажатии Enter
+    }
+  } 
 
   return (
     <div>
       <input
-        ref={InputRef}
+        ref={inputRef}
         type="text"
         value={value}
         onChange={handleClickChange}
+        onKeyDown={handleKeyDown}
       />
       <button onClick={addDealInArr}>Добавить</button>
-      <ul>{deal.map(el => {
-        <li>{el.text}</li>   
-      })}</ul>
+      <ul>
+        {deal.map((deal) => (
+          <li key={deal.id}>{deal.text}</li>
+        ))}
+      </ul>
     </div>
   );
 };
