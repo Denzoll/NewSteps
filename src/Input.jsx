@@ -9,19 +9,38 @@ const Input = () => {
   const [deal, setDeal] = useState([]);
   const addDealInArr = () => {
     if (value !== "") {
-      setDeal([...deal, { id: Date.now(), text: value }]);
+      setDeal([...deal, { id: Date.now(), text: value, done: false }]);
 
       setValue("");
     }
   };
   useEffect(() => {
     inputRef.current.focus();
-  }, []) 
+  }, []);
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      addDealInArr(); // Добавляем дело при нажатии Enter
+      addDealInArr();
     }
-  } 
+  };
+  useEffect(() => {
+    if (deal.length > 0) {
+      localStorage.setItem("deals", JSON.stringify(deal));
+    }
+  }, [deal]);
+  useEffect(() => {
+    const storedDeals = localStorage.getItem("deals");
+    if (storedDeals) {
+      try {
+        const parsedDeals = JSON.parse(storedDeals);
+
+        if (Array.isArray(parsedDeals)) {
+          setDeal(parsedDeals);
+        }
+      } catch (e) {
+        console.error("Ошибка при парсинге данных из localStorage", e);
+      }
+    }
+  }, []);
 
   return (
     <div>
@@ -35,7 +54,7 @@ const Input = () => {
       <button onClick={addDealInArr}>Добавить</button>
       <ul>
         {deal.map((deal) => (
-          <li key={deal.id}>{deal.text}</li>
+          <li key={deal.id}>{deal.text}</li> 
         ))}
       </ul>
     </div>
